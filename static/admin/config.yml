@@ -14,8 +14,10 @@ collections:
     slug: "{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
     extension: "html"
     fields: # The fields for each document, usually in front matter
-      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Title", name: "path", widget: "string"}
       - {label: "Body", name: "body", widget: "text"}
+    editor:
+      preview: false
   - name: "includes" # Used in routes, e.g., /admin/collections/blog
     label: "Includes" # Used in the UI
     folder: "html/includes" # The path to the folder where the documents are stored
@@ -25,6 +27,8 @@ collections:
     fields: # The fields for each document, usually in front matter
       - {label: "Title", name: "title", widget: "string"}
       - {label: "Body", name: "body", widget: "text"}
+    editor:
+      preview: false
   - name: "layouts" # Used in routes, e.g., /admin/collections/blog
     label: "Layouts" # Used in the UI
     folder: "html/layouts" # The path to the folder where the documents are stored
@@ -33,4 +37,7 @@ collections:
     extension: "html"
     fields: # The fields for each document, usually in front matter
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Body", name: "body", widget: "text"}      
+      - {label: "Body", name: "body", widget: "text"}
+    editor:
+      preview: false
+      
