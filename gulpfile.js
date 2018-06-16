@@ -55,6 +55,8 @@ gulp.task('copy', function() {
     gulp.src(['assets/css/*.css']).pipe(gulp.dest('_site/assets/css/'));
     //Copy other external font assets
     gulp.src(['assets/fonts/*']).pipe(gulp.dest('_site/assets/fonts/'));
+    //Copy other static html files
+    gulp.src(['static/**/*']).pipe(gulp.dest('_site/'));
 });
 
 //Theme Sass variables
