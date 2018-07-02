@@ -7,10 +7,20 @@ var autoprefixer = require('autoprefixer');
 var mq4HoverShim = require('mq4-hover-shim');
 var rimraf = require('rimraf').sync;
 var browser = require('browser-sync');
-var panini = require('panini');
 var concat = require('gulp-concat');
+const { spawn } = require('child_process');
+const hugo = require('hugo-bin');
+
 var port = process.env.SERVER_PORT || 8080;
 var nodepath =  'node_modules/';
+
+// Hugo arguments
+const hugoArgsDefault = ["-d", "../_site", "-s", "hugo", "-v"];
+const hugoArgsPreview = ["--buildDrafts", "--buildFuture"];
+
+// Development tasks
+gulp.task("hugo", (cb) => buildSite(cb));
+gulp.task("hugo-preview", (cb) => buildSite(cb, hugoArgsPreview));
 
 // Starts a BrowerSync instance
 gulp.task('server', ['build'], function(){
@@ -22,18 +32,16 @@ gulp.task('watch', function() {
     gulp.watch('scss/**/*', ['compile-scss', browser.reload]);
     gulp.watch('sass/**/*', ['compile-sass', browser.reload]);
     gulp.watch('js/**/*', ['copy-js', browser.reload]);
-    gulp.watch('html/pages/**/*', ['compile-html']);
+    gulp.watch('hugo/{archetypes,content,layouts,data,static}/**/*', ['hugo']);
     gulp.watch('images/**/*', ['copy-images', browser.reload]);
-    gulp.watch(['html/{layouts,includes,helpers,data}/**/*'], ['compile-html:reset','compile-html']);
-    gulp.watch(['./src/{layouts,partials,helpers,data}/**/*'], [panini.refresh]);
 });
 
 // Erases the dist folder
 gulp.task('reset', function() {
     rimraf('bulma/*');
     rimraf('scss/*');
-    rimraf('assets/css/*');
-    rimraf('assets/fonts/*');
+//    rimraf('assets/css/*');
+//    rimraf('assets/fonts/*');
     rimraf('images/*');
 });
 
@@ -55,8 +63,6 @@ gulp.task('copy', function() {
     gulp.src(['assets/css/*.css']).pipe(gulp.dest('_site/assets/css/'));
     //Copy other external font assets
     gulp.src(['assets/fonts/*']).pipe(gulp.dest('_site/assets/fonts/'));
-    //Copy other static html files
-    gulp.src(['static/**/*']).pipe(gulp.dest('_site/'));
 });
 
 //Theme Sass variables
@@ -127,25 +133,6 @@ gulp.task('compile-scss', function () {
         .pipe(gulp.dest('./_site/assets/css/'));
 });
 
-// Compile Html
-gulp.task('compile-html', function() {
-    gulp.src('html/pages/**/*.html')
-        .pipe(panini({
-        root: 'html/pages/',
-        layouts: 'html/layouts/',
-        partials: 'html/includes/',
-        helpers: 'html/helpers/',
-        data: 'html/data/'
-    }))
-        .pipe(gulp.dest('_site'))
-        .on('finish', browser.reload);
-});
-
-gulp.task('compile-html:reset', function(done) {
-    panini.refresh();
-    done();
-});
-
 // Compile js from node modules
 gulp.task('compile-js', function() {
     return gulp.src([ 
@@ -169,5 +156,24 @@ gulp.task('copy-images', function() {
 });
 
 gulp.task('init', ['setupBulma']);
-gulp.task('build', ['clean','copy','compile-js', 'copy-js', 'compile-sass', 'compile-scss', 'compile-html', 'copy-images']);
+gulp.task('build', ['clean','copy','compile-js', 'copy-js', 'compile-sass', 'compile-scss', 'hugo', 'copy-images']);
 gulp.task('default', ['server', 'watch']);
+
+/**
+ * Run hugo and build the site
+ */
+function buildSite(cb, options, environment = "development") {
+    const args = options ? hugoArgsDefault.concat(options) : hugoArgsDefault;
+    
+    process.env.NODE_ENV = environment;
+
+    return spawn(hugo, args, {stdio: "inherit"}).on("close", (code) => {
+        if (code === 0) {
+            browser.reload();
+            cb();
+        } else {
+            browser.notify("Hugo build failed :(");
+            cb("Hugo build failed");
+        }
+    });
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>
+      {{ block "title" . }}
+        {{ .Site.Title }}
+      {{ end }}          
+    </title>
+    <link rel="icon" type="image/png" href="{{.Site.BaseURL}}assets/images/favicon.png" />
+
+    <!--Core CSS -->
+    <link rel="stylesheet" href="{{.Site.BaseURL}}assets/css/bulma.css">
+    <link rel="stylesheet" type="text/css" href="{{.Site.BaseURL}}assets/css/core.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <!--Libraries-->
+    <link rel="stylesheet" type="text/css" href="{{.Site.BaseURL}}assets/css/icons.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+  </head>
+  <body>
+    {{ partial "preloader.html" . }}
+    
+    {{ block "body" . }}
+      <!-- Main content for the page -->
+    {{ end }}
+      
+    {{ partial "footer.html" . }}
+    {{ partial "backtotop.html" . }}
+    {{ partial "sidebar.html" . }}
+    {{ partial "scripts.html" . }}
+    
+    <script>
+     if (window.netlifyIdentity) {
+       window.netlifyIdentity.on("init", user => {
+         if (!user) {
+           window.netlifyIdentity.on("login", () => {
+             document.location.href = "/admin/";
+           });
+         }
+       });
+     }
+    </script>
+  </body>  
+</html>

@@ -1,0 +1,13 @@
+{{ define "title" }}
+  {{ .Page.Title }}
+{{ end }}
+
+{{ define "body" }}
+  <section class="is-default is-bold">
+    {{partial "navbar" .}} 
+    {{partial "navbar-clone" .}}      
+  </section>
+
+  {{.Content}}
+  
+{{ end }}

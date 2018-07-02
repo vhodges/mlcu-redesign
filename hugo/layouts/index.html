@@ -1,0 +1,8 @@
+{{ define "body" }}
+  <section class="hero is-fullheight is-default is-bold">
+    {{partial "navbar" .}}    
+    {{partial "navbar-clone" .}}
+    
+    {{.Content}}
+  </section>
+{{ end }}
